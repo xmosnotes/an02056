@@ -1,30 +1,40 @@
 :orphan:
 
-#######################
-AN0XXXX: Board test procedure and code
-#######################
+######################################
+AN02056: Board test procedure and code
+######################################
 
 :vendor: XMOS
 :version: 1.0.0
 :scope: Example
-:description: <BRIEF DESCRIPTION OF APP NOTE>
-:category: <[Voice | Audio | Vision | General Purpose]>
-:keywords: <LIST OF KEYWORDS HERE>
-:hardware: <LIST OF SUPPORTED BOARDS HERE>
+:description: This app note provides a method and source code for
+              smoke-testing a newly designed board
+:category: General Purpose
+:keywords: Test
+:hardware: 
 
 
 *******
 Summary
 *******
 
-<OVERVIEW OF APP NOTE HERE - DISPLAYED ON APP NOTE LANDING PAGE>
+When designing a new board, it can be useful to put the board through a set
+of tests to establish that the xcore is fully functional, powered
+correctly, etc. This app note contains a small collection of test programs.
+You can add extra test programs that are specific to your board design.
 
 ********
 Features
 ********
 
-* Feature 1
-* Feature 1
+* Tests JTAG connectivity
+
+* Tests power
+
+* Tests power impulse response
+
+* Tests XSCOPE link
+
 
 ************
 Known issues
@@ -42,13 +52,11 @@ Required tools
 Required libraries (dependencies)
 *********************************
 
-* lib_abc
-* lib_def
+* None
 
 *************************
 Related application notes
 *************************
 
-* `AN00000 - an00000 title <https://www.xmos.com/application-notes/an00000>`_
-* `AN00001 - an00001 title <https://www.xmos.com/application-notes/an00001>`_
+* None
 

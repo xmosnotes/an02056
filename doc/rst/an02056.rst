@@ -14,6 +14,8 @@ The steps that may be helpful are:
 
 * Establish that hello world works
 
+* Establish that the oscillator is set to the correct frequency
+
 * Establish that XSCOPE works
 
 * Establish that the power supply can supply the peak rate
@@ -103,9 +105,31 @@ Execute this program as follows::
 
 The output should be::
 
-  Hello World
+  Hello world!
 
 On error ``xrun`` may hang.
+
+Frequency test
+--------------
+
+This program prints, 60 times, a message exactly one second apart.
+The whole program should execute in exactly 60 seconds. You can visually
+check that the timings are right by keeping an eye on a wall-clock
+simultaneously ::
+
+  xrun --io app_an02056_frequency/bin/app_an02056_frequency.xe
+
+The output should be::
+
+  00:00:00
+  00:00:01
+  00:00:02
+  ...
+  00:00:59
+  
+If the lines are not one second apart, then either the Oscillator frequency
+in the XN file does not reflect the input frequency on XIN, or the
+reference timer is not set correctly.
 
 XSCOPE
 ------

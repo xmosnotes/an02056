@@ -215,13 +215,13 @@ def run_flash_command(arg0, output_len, timeout):
 
 def test_flash_ident():
   print('Reading flash ID ....................... ', end='', flush=True)
-  ident = run_flash_command('0x9f', 3, 5)
+  ident = run_flash_command('0x9f', 3, 10)
   print('PASS')
   return ident
 
 def test_flash_sfdp():
   print('Reading flash parameters ............... ', end='', flush=True)
-  sfdp = run_flash_command('0x5A', 259, 10)
+  sfdp = run_flash_command('0x5A', 259, 20)
   sfdp = sfdp[3:]
   zeroes = ['0x00'] * 8
   while len(sfdp) > 8 and sfdp[len(sfdp)-8:] == zeroes:

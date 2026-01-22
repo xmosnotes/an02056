@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 include($ENV{XMOS_CMAKE_PATH}/xcommon.cmake)
-project(app_an02056_power_impulse_600)
+project(app_an02056_power)
 
 set(APP_HW_TARGET          board.xn)
 
 set(APP_DEPENDENT_MODULES  "")
 
-set(APP_COMPILER_FLAGS_impulse_600 -O2 -DSLOPE=0 -DSPEED=600)
-set(APP_COMPILER_FLAGS_slope_600   -O2 -DSLOPE=1 -DSPEED=600)
+set(APP_COMPILER_FLAGS_impulse -O2 -DSLOPE=0)
+set(APP_COMPILER_FLAGS_slope   -O2 -DSLOPE=1)
 
 set(APP_INCLUDES           src/)
 

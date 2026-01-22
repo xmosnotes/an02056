@@ -41,6 +41,13 @@ build system, which is provided with the XTC tools and is based on `CMake <https
 The ``an02056`` software ZIP package should be downloaded and extracted to a chosen working
 directory.
 
+Before you build the system, you should copy the configuration file for
+your board over each of the ``app_an02056_*/board.xn`` files. The default
+``board.xn`` file assumes a 600 MHz XCORE.AI chip with a flash connected to
+the standard pins. You may be able to use this file, but copying your XN
+file over the provided ``board.xn`` file will ensure that your XN file is
+correct.
+
 To configure the build, the following commands should be run from an XTC command prompt::
 
     cd an02056
@@ -58,9 +65,9 @@ Binary artifacts (.xe files) will be generated in:
 
 *  ``app_an02056_hello_world/bin`` for hello world
 
-*  ``app_an02056_power/bin/slope_600`` for the power supply test
+*  ``app_an02056_power/bin/slope`` for the power supply test
 
-*  ``app_an02056_power/bin/impulse_600`` for the load change test
+*  ``app_an02056_power/bin/impulse`` for the load change test
 
 *  ``app_an02056_xscope/bin`` for the xscope test
 
@@ -98,6 +105,8 @@ The output should be::
 
   Hello World
 
+On error ``xrun`` may hang.
+
 XSCOPE
 ------
 
@@ -118,7 +127,8 @@ The output should be::
 There should be no gaps in the messages. A gap indicates that the host
 computer is not fast enough to keep up with xscope; garbled output
 indicates that the xscope link in electrically unstable. No output
-indicates that the xscope link is not enabled properly.
+indicates that the xscope link is not enabled properly. On error ``xrun``
+may hang.
 
 Power supply peak
 -----------------
@@ -127,14 +137,14 @@ The power supply peak test runs a program that, on both tiles, executes VPU
 instructions with alternating bit patterns. This puts a high demand on the
 power supply. Execute this program as follows::
 
-  xrun --io app_an02056_power/bin/slope_600
+  xrun --io app_an02056_power/bin/slope/app_an02056_power_slope.xe
 
 The output should be::
 
   PASS
 
 Any other output indicates that the power supply is not keeping up with
-demand.
+demand. ``xrun`` will hang on any error.
 
 
 Power supply load change
@@ -145,14 +155,14 @@ instructions with alternating bit patterns. It starts all threads
 simultaneously causing a sudden load change on the power supply/
 Execute this program as follows::
 
-  xrun --io app_an02056_power/bin/impulse_600
+  xrun --io app_an02056_power/bin/impulse/app_an02056_power_impulse.xe
 
 The output should be::
 
   PASS
 
 Any other output indicates that the power supply cannot cope with a sudden
-load change.
+load change. ``xrun`` will hang on any error.
 
 
 .. _further_reading:

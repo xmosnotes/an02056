@@ -57,21 +57,29 @@ build system, which is provided with the XTC tools and is based on `CMake <https
 The ``an02056`` software ZIP package should be downloaded and extracted to a chosen working
 directory.
 
-Running the one-touch test program
-----------------------------------
+Running the test program
+------------------------
 
-Assuming you have python installed (> 3.7.7), run::
+The app note comes with a test program that runs all tests in sequence.
+Assuming you have python installed (> 3.7.7) and the XMOS tools (see the
+previous section) run the following Python script::
 
   python test.py
 
 This runs a sequence of tests, and stops at the first failing test,
 providing a log of outputs.
 
-All going well - this test passes and you can stop here.
+All going well - this test passes and you can stop here. If it fails, it
+will give you information at what point it failed and why.
 
 
 Building the tests from source
 ------------------------------
+
+You can build all the tests from scratch and run them individually. This is
+especially important if you have a board that, for example, uses a
+different input clock frequency, runs at a higher frequency (800 MHz
+parts), or has the boot flash on unusual pins.
 
 Before you build the system, you should copy the configuration file for
 your board over each of the ``app_an02056_*/board.xn`` files. The default
@@ -93,7 +101,7 @@ The application binaries should then be built using ``xmake``::
 
     xmake -j -C build
 
-Binary artifacts (.xe files) will be generated in:
+Binary artefacts (.xe files) will be generated in:
 
 *  ``app_an02056_hello_world/bin`` for hello world
 
@@ -103,27 +111,37 @@ Binary artifacts (.xe files) will be generated in:
 
 *  ``app_an02056_xscope/bin`` for the xscope test
 
+*  ``app_an02056_flash/bin`` for the xscope test
+
 For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
 by ``xmake`` as needed.
 
-JTAG wiring
------------
+Note that all the binaries are generated in the directories above; not in
+the ``default-bin`` directory where the python script expects the binaries.
+Hence, after building you either have to run the binaries manually as shown
+below, or you must copy them into the default-bin directory where they will
+be picked up.
 
-We test JTAG wiring by checking the length of the scan chain?
 
 Chip responsiveness
 -------------------
 
-We test chip resonsipveness by issueing this command::
+We test chip responsiveness by issuing this command::
 
   xrun -l
 
 The output should be::
 
-  bla
+  Available XMOS Devices
+  ----------------------
 
-Where the ID may be any number
+    ID    Name                  Adapter ID      Devices
+    --    ----                  ----------      -------
+    0     XMOS XTAG-4           42ADT6AB        XS3A[0]
+
+Where the Adapter ID is some 8-character string. The test program expects
+exactly one XTAG adapter.
 
 Hello world
 -----------
@@ -220,6 +238,49 @@ load change. ``xrun`` will hang on any error.
 
 
 .. _further_reading:
+
+Flash ID
+--------
+
+The flash ID is read with the command::
+
+  xflash --spi-command 0x9f 3 1 --target-file app_an02056_power/board.xn
+  
+
+Flash SFDP
+----------
+
+The flash SFDP (Serial Flash Discovery Protocol) is read with the command::
+
+  xflash --spi-command 0x5A 259 1 --target-file app_an02056_power/board.xn
+  
+This produces the descriptor as specified in JEDEC Standard 216H.
+
+Flash Program
+-------------
+
+This programs the Flash with the command::
+
+  xflash app_an02056_flash/bin/app_an02056_flash.xe
+
+And should end with a successful write.
+
+Check core booted from flash
+----------------------------
+
+This test uses the debugger to connect to the flash chip. This will issue a
+reset, and cause the program to run. The program will write the word
+0x5AA50FF0 into address 0xA1234.
+
+The test performs the following commands in XGDB::
+
+  connect
+  p/x *(0xA1234)
+
+The expected output is::
+
+  $1 = 0x5aa50ff0
+
 
 Further reading
 ---------------

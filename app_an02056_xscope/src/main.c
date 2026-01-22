@@ -2,8 +2,16 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
+#include <xcore/timer.h>
 
 int main()
 {
-    printf("hello world!\n");
+    hwtimer_t tmr;
+    for(int i = 0; i < 1000; i++) {
+        printf("hello %d\n");
+        
+        int t = hwtimer_get_time(tmr);
+        hwtimer_set_trigger_time(tmr, t+100); // give xtag a breather
+        (void) hwtimer_get_time(tmr);
+    }
 }

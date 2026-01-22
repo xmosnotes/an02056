@@ -5,5 +5,6 @@ project(app_an02056)
 
 add_subdirectory(app_an02056_hello_world)
 add_subdirectory(app_an02056_power)
-add_subdirectory(app_an02056_power_impulse)
+add_subdirectory(app_an02056_power_impulse_600)
+add_subdirectory(app_an02056_power_impulse_800)
 add_subdirectory(app_an02056_xscope)

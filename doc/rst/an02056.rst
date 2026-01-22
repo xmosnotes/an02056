@@ -1,56 +1,31 @@
-##############################
 AN02056: Board test procedure and code
-##############################
+======================================
 
-************
-Introduction
-************
+When developing a new board it may be useful to run a set of test programs
+on the board to check for basic functionality. This application note
+contains a set of test programs and a python program that runs those
+programs and a few additional tests.
 
-Introduction text
+The steps that may be helpful are:
 
-***********
-Section one
-***********
+* Establish that JTAG is connected up
 
-Section one text
+* Establish that the chip is responsive
 
-Sub-section
-===========
+* Establish that hello world works
 
-Sub-section text
+* Establish that XSCOPE works
 
-Another sub-section
-===================
+* Establish that the power supply can supply the peak rate
 
-Another sub-section text
+* Establish that the power supply can respond to a sudden change in load
 
-***********
-Section two
-***********
+These tests have been written for XCORE.AI. All byt the power supply tests
+will also work on XCORE-200. Before presenting each test we discuss how to
+obtain the software and how to build it.
 
-Section two text
-
-Section two subsection
-======================
-
-Sub section text
-
-Section two subsubsection
--------------------------
-
-Sub sub section text
-
-Another subsubsection
----------------------
-
-Sub sub section text
-
-*******************
-Example application
-*******************
-
-Building the example
-====================
+Downloading and Building all tests
+----------------------------------
 
 This section assumes that the `XMOS XTC Tools <https://www.xmos.com/software-tools/>`_ have been
 downloaded and installed. The required version is specified in the accompanying ``README``.
@@ -79,32 +54,111 @@ The application binaries should then be built using ``xmake``::
 
     xmake -j -C build
 
-Binary artifacts (.xe files) will be generated under the appropriate subdirectories of the
-``app_an02056/bin`` directory — one for each supported build configuration.
+Binary artifacts (.xe files) will be generated in:
+
+*  ``app_an02056_hello_world/bin`` for hello world
+
+*  ``app_an02056_power/bin/slope_600`` for the power supply test
+
+*  ``app_an02056_power/bin/impulse_600`` for the load change test
+
+*  ``app_an02056_xscope/bin`` for the xscope test
 
 For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
 by ``xmake`` as needed.
 
-Running the example
-===================
+JTAG wiring
+-----------
 
-From an XTC command prompt, the following command should be run from the ``an02056/app_an02056``
-directory::
+We test JTAG wiring by checking the length of the scan chain?
 
-    xrun ./bin/app_an02056.xe
+Chip responsiveness
+-------------------
 
-Alternatively, the application can be programmed into flash memory for standalone execution::
+We test chip resonsipveness by issueing this command::
 
-    xflash ./bin/app_an02056.xe
+  xrun -l
 
-|newpage|
+The output should be::
+
+  bla
+
+Where the ID may be any number
+
+Hello world
+-----------
+
+This program, predictably, prints "Hello world". It does so over JTAG.
+Execute this program as follows::
+
+  xrun --io app_an02056_hello_world/bin/app_an02056_hello_world.xe
+
+The output should be::
+
+  Hello World
+
+XSCOPE
+------
+
+This program, prints "Hello world" followed by a number 1000 times.
+It does so over XSCOPE so the numbers should be printed rapidly..
+Execute this program as follows::
+
+  xrun --xscope app_an02056_xscope/bin/app_an02056_xscope.xe
+
+The output should be::
+
+  hello 0000
+  hello 0001
+  hello 0002
+  ...
+  hello 0999
+
+There should be no gaps in the messages. A gap indicates that the host
+computer is not fast enough to keep up with xscope; garbled output
+indicates that the xscope link in electrically unstable. No output
+indicates that the xscope link is not enabled properly.
+
+Power supply peak
+-----------------
+
+The power supply peak test runs a program that, on both tiles, executes VPU
+instructions with alternating bit patterns. This puts a high demand on the
+power supply. Execute this program as follows::
+
+  xrun --io app_an02056_power/bin/slope_600
+
+The output should be::
+
+  PASS
+
+Any other output indicates that the power supply is not keeping up with
+demand.
+
+
+Power supply load change
+------------------------
+
+The power supply load change test runs a program that, on both tiles, executes VPU
+instructions with alternating bit patterns. It starts all threads
+simultaneously causing a sudden load change on the power supply/
+Execute this program as follows::
+
+  xrun --io app_an02056_power/bin/impulse_600
+
+The output should be::
+
+  PASS
+
+Any other output indicates that the power supply cannot cope with a sudden
+load change.
+
 
 .. _further_reading:
 
-***************
 Further reading
-***************
+---------------
 
 * `XMOS` XTC Tools Installation Guide
 

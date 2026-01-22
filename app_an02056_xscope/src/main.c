@@ -2,7 +2,13 @@
 // This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
 #include <stdio.h>
+#include <xscope.h>
 #include <xcore/hwtimer.h>
+
+void xscope_user_init() {
+   xscope_register(0, 0, "", 0, "");
+   xscope_config_io(XSCOPE_IO_BASIC);
+}
 
 int main()
 {

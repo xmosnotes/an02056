@@ -6,7 +6,8 @@ on the board to check for basic functionality. This application note
 contains a set of test programs and a python program that runs those
 programs and a few additional tests.
 
-The steps that may be helpful are:
+In its simplest form, you can execute a single python test procedure that
+will perform a series of basic tests. The tests performed include:
 
 * Establish that JTAG is connected up
 
@@ -22,12 +23,25 @@ The steps that may be helpful are:
 
 * Establish that the power supply can respond to a sudden change in load
 
-These tests have been written for XCORE.AI. All byt the power supply tests
+* Identify the flash device and it's properties
+
+* Program the flash and execute the code
+
+The source code of these tests is provided and you can
+
+* Provide your own board description to deal with different crystal
+  frequencies etc
+
+* Extend or modify the tests
+
+* Add your own tests
+
+The tests have been written for XCORE.AI. All byt the power supply tests
 will also work on XCORE-200. Before presenting each test we discuss how to
 obtain the software and how to build it.
 
-Downloading and Building all tests
-----------------------------------
+Downloading the test program
+----------------------------
 
 This section assumes that the `XMOS XTC Tools <https://www.xmos.com/software-tools/>`_ have been
 downloaded and installed. The required version is specified in the accompanying ``README``.
@@ -42,6 +56,22 @@ build system, which is provided with the XTC tools and is based on `CMake <https
 
 The ``an02056`` software ZIP package should be downloaded and extracted to a chosen working
 directory.
+
+Running the one-touch test program
+----------------------------------
+
+Assuming you have python installed (> 3.7.7), run::
+
+  python test.py
+
+This runs a sequence of tests, and stops at the first failing test,
+providing a log of outputs.
+
+All going well - this test passes and you can stop here.
+
+
+Building the tests from source
+------------------------------
 
 Before you build the system, you should copy the configuration file for
 your board over each of the ``app_an02056_*/board.xn`` files. The default

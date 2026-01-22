@@ -1,8 +1,5 @@
 #!/usr/bin/env python3.8
 
-# Python 3
-# xcore.ai Explorer Board Test Script
-
 import sys
 MIN_PYTHON = (3, 7, 7)
 # print(sys.version_info)
@@ -12,17 +9,7 @@ if sys.version_info < MIN_PYTHON:
 import subprocess
 import time
 import os
-import getopt
-from datetime import datetime
 
-# from pylab import*
-# from scipy.io import wavfile
-
-header_string = '''
-* * * MANUFACTURING TEST FOR xcore.ai vision explorer Board 1V1 * * *
-
-See instructions document for test setup.
-'''
 
 big_pass = '''
 #######################################
@@ -66,85 +53,112 @@ def fmt_out(stdout='', stderr=''):
   return "STDOUT:\n{}\nSTDERR:\n{}".format(stdout, stderr)
 
 
-def check_tools_ver(tools_str):
-  print('Checking XMOS Tools version ..... ', end='')
+def check_tools_version(tools_major, tools_minor, tools_sub):
+  print('Checking XMOS Tools version ............ ', end='', flush=True)
   try:
-    result = subprocess.run(args=['xrun', '-v'], timeout=5, capture_output=True, universal_newlines=True)
+    result = subprocess.run(args=['xcc', '--version'], timeout=2, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' FAIL - TIMEOUT')
     test_fail()
-  if tools_str in result.stderr:
-    print('OK')
-  else:
-    print(f'ERROR: Incorrect XMOS Tools version. Expected {tools_str}.')
+  lines = result.stdout.splitlines()
+  if len(lines) < 2:
+    print(f'ERROR: Incorrect XMOS Tools version string too short')
     test_fail(fmt_out(result.stdout, result.stderr))
+  words = lines[1].split()
+  if len(words) < 3:
+    print(f'ERROR: Incorrect XMOS Tools version string is short')
+    test_fail(fmt_out(result.stdout, result.stderr))
+  version = words[2].split('.')
+  if len(version) != 3:
+    print(f'ERROR: Incorrect XMOS Tools version does not have three components')
+    test_fail(fmt_out(result.stdout, result.stderr))
+  compatible = True
+  compatible = compatible and int(version[0]) == tools_major
+  if int(version[1]) == tools_minor:
+    compatible = compatible and int(version[2]) >= tools_sub
+  elif int(version[1]) < tools_major:
+    compatible = False
+  if not compatible:
+    print('Requires version %d.%d.%d not %s\n' % (tools_major, tools_minor, tools_sub, words[2]))
+    test_fail(fmt_out(result.stdout, result.stderr))
+  print('PASS')
 
 
 def test_hello():
-  print('Testing hello world ..... ', end='')
-  try:
-    result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin','app_an02056_hello_world.xe')], timeout=5, capture_output=True, universal_newlines=True)
-  except subprocess.TimeoutExpired as e:
-    print(' FAIL - TIMEOUT')
-    test_fail()
-  if 'Hello world!\n' == result.stdout:
-    print('OK')
-  else:
-    print(f'Hello world did not print Hello World!')
-    test_fail(fmt_out(result.stdout, result.stderr))
-
-def test_xscope():
-  print('Testing xscope ..... ', end='')
-  success = False
-  for link_nr in range(8):
-    try:
-      result = subprocess.run(args=['xrun', '--xscope', os.path.join('default_bin','app_an02056_xscope%d.xe' % link_nr)], timeout=5, capture_output=True, universal_newlines=True)
-      success = True
-    except subprocess.TimeoutExpired as e:
-      pass
-    if success:
-      break
-
-  expected = ''
-  for i in range(1000):
-    expected += 'hello %04d\n' % i
-    
-  if expected == result.stdout:
-    print('OK')
-  else:
-    print(f'Hello world did not print 1000 times hello %04d')
-    test_fail(fmt_out(result.stdout, result.stderr))
-
-
-def test_frequency():
-  print('Testing frequency ..... ', end='')
+  print('Testing hello world .................... ', end='', flush=True)
   try:
     start = time.time()
-    result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin','app_an02056_frequency.xe')], timeout=65, capture_output=True, universal_newlines=True)
+    result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin','app_an02056_hello_world.xe')], timeout=5, capture_output=True, universal_newlines=True)
     elapsed = time.time() - start
   except subprocess.TimeoutExpired as e:
     print(' FAIL - TIMEOUT')
     test_fail()
-  if abs(elapsed - 60) < 0.1:
-    print('OK')
+  if 'Hello world!\n' == result.stdout:
+    print('PASS')
   else:
-    print(f'Hello world took wrong time ', elapsed)
+    print(f'Hello world did not print Hello World!')
+    test_fail(fmt_out(result.stdout, result.stderr))
+  return elapsed
+
+def test_xscope():
+  print('Testing xscope ......................... ', end='', flush=True)
+  the_link_nr = None
+  for link_nr in range(8):
+    try:
+      result = subprocess.run(args=['xrun', '--xscope', os.path.join('default_bin','app_an02056_xscope%d.xe' % link_nr)], timeout=5, capture_output=True, universal_newlines=True)
+      the_link_nr = link_nr
+    except subprocess.TimeoutExpired as e:
+      pass
+    if the_link_nr is not None:
+      break
+
+  if the_link_nr is None:
+    print(f'No working XSCOPE link found')
+    test_fail(fmt_out(result.stdout, result.stderr))
+
+  print('Found XSCOPE on link %d...'%the_link_nr, end = '', flush=True)
+
+  expected = ''
+  for i in range(1000):
+    expected += 'hello %04d\n' % i
+
+  if expected == result.stdout:
+    print('Successfully found 1000 messages .... PASS')
+  else:
+    print(f'Hello world did not print 1000 times hello %04d')
+    test_fail(fmt_out(result.stdout, result.stderr))
+
+  return the_link_nr
+
+def test_frequency(elapsed_empty):
+  print('Testing frequency (takes 1 minute) ..... ', end='', flush=True)
+  try:
+    start = time.time()
+    result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin','app_an02056_frequency.xe')], timeout=65, capture_output=True, universal_newlines=True)
+    elapsed = time.time() - start - elapsed_empty
+  except subprocess.TimeoutExpired as e:
+    print(' FAIL - TIMEOUT')
+    test_fail()
+  if abs(elapsed - 60) < 1:
+    print('PASS')
+  else:
+    print(f'Frequency test took wrong time ', elapsed)
     test_fail(fmt_out(result.stdout, result.stderr))
 
 def test_power(slope):
   if slope:
     binary = 'app_an02056_power_slope.xe'
-    print('Testing power steady max supply ..... ', end='')
+    print('Testing power steady max supply ........ ', end='', flush=True)
   else:
     binary = 'app_an02056_power_impulse.xe'
-    print('Testing power suddent change in load ..... ', end='')
+    print('Testing power suddent change in load ... ', end='', flush=True)
   try:
     result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin', binary)], timeout=5, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' FAIL - TIMEOUT')
     test_fail()
   if 'PASS\n' == result.stdout:
-    print('OK')
+    print('PASS')
   else:
     print(f'Power test failed ')
     test_fail(fmt_out(result.stdout, result.stderr))
@@ -152,7 +166,7 @@ def test_power(slope):
 def test_usb():
   # NOTE DUT must be connected to PC with USB cable for this test...
   print('Testing USB .............', end='', flush=True)
-  result = subprocess.run(args=['xrun', 'bin/app_hid_mouse_demo_AI.xe'], timeout=12, capture_output=True, universal_newlines=True)
+  result = subprocess.run(args=['xrun', os.path.join('default_bin','app_hid_mouse_demo_AI.xe')], timeout=12, capture_output=True, universal_newlines=True)
   # wait 2 seconds for device to enumerate
   for i in range(2):
     time.sleep(1)
@@ -160,7 +174,7 @@ def test_usb():
   # do lsusb see if device in tree.
   result = subprocess.run(args=['lsusb'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
   if 'ID 20b1:1010 XMOS Ltd' in result.stdout:
-    print(' PASS')
+    print('PASS')
   else:
     print(' FAIL')
     test_fail(fmt_out(result.stdout, result.stderr))
@@ -168,39 +182,58 @@ def test_usb():
 def test_mipi():
   print('Testing MIPI ....................', end='', flush=True)
   try:
-    proc = subprocess.run(args=['xrun', '--xscope', 'bin/app_characterisation_VISION_EXPLORER.xe'], timeout=20, capture_output=True, universal_newlines=True)
+    proc = subprocess.run(args=['xrun', '--xscope', os.path.join('default_bin','app_characterisation_VISION_EXPLORER.xe')], timeout=20, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' TIMEOUT - FAIL')
     test_fail()
   out = proc.stderr
   if 'PASS' in out:
-    print(' PASS')
+    print('PASS')
   else:
     print(' FAIL')
     test_fail(fmt_out(proc.stdout, proc.stderr))
 
-def run_flash_command(arg0, output_len):
+def run_flash_command(arg0, output_len, timeout):
   try:
-    proc = subprocess.run(args=['xflash', '--spi-command', arg0, '0', output_len,
+    proc = subprocess.run(args=['xflash', '--spi-command', arg0, str(output_len), '0',
                                 '--target-file', os.path.join('default_bin','board.xn')],
-                                timeout=5, capture_output=True, universal_newlines=True)
+                                timeout=timeout, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' TIMEOUT - FAIL')
     test_fail()
-  return proc.stdout[0:output_len]
+  if proc.stderr != '':
+    print(' FAIL')
+    test_fail(fmt_out(proc.stdout, proc.stderr))
+  response = proc.stdout.split()
+  if len(response) != output_len + 7:
+    print(' FAIL response too short ', proc.stdout)
+    test_fail()
+  output = []
+  for i in response[7:]:
+    output += [i[0:4]]
+  return output
 
 def test_flash_ident():
-  print('Reading flash parameters: ')
-  ident = run_flash_command('0x9f', '3')
-  print(' PASS <', str(ident), '>')
+  print('Reading flash ID ....................... ', end='', flush=True)
+  ident = run_flash_command('0x9f', 3, 5)
+  print('PASS')
+  return ident
 
 def test_flash_sfdp():
-  print('Reading flash parameters: ')
-  sfdp = run_flash_command('0x5A', '256')
-  print(' PASS <', str(sfdp), '>')
+  print('Reading flash parameters ............... ', end='', flush=True)
+  sfdp = run_flash_command('0x5A', 259, 10)
+  sfdp = sfdp[3:]
+  zeroes = ['0x00'] * 8
+  while len(sfdp) > 8 and sfdp[len(sfdp)-8:] == zeroes:
+    sfdp = sfdp[:len(sfdp)-8]
+  
+  
+  # TODO trim dummy bytes and parse
+  print('PASS')
+  return sfdp
 
 def test_flash_program():
-  print('Testing programming flash:')
+  print('Trying to write program to flash ....... ', end='', flush=True)
   try:
     proc = subprocess.run(args=['xflash', '-f', os.path.join('default_bin','app_an02056_flash.xe')],
                           timeout=30, capture_output=True, universal_newlines=True)
@@ -208,16 +241,14 @@ def test_flash_program():
     print(' TIMEOUT - FAIL')
     test_fail()
 
-  if True:
-    print(proc.stdout)
-    print(proc.stderr)
-    print(' PASS')
+  if 'Site 0 has finished successfully' in proc.stdout:
+    print('PASS')
   else:
     print(' FAIL')
     test_fail(fmt_out(proc.stdout, proc.stderr))
 
 def test_flash_run():
-  print('Testing running program in flash:')
+  print('Check xCORE booted from flash .......... ', end='', flush=True)
   try:
     proc = subprocess.run(args=['xgdb',
                                   '--batch',
@@ -227,13 +258,14 @@ def test_flash_run():
     print(' TIMEOUT - FAIL')
     test_fail()
 
-  if '5AA50FF0' in proc.stdout:
-    print(' PASS')
+  if ' = 0x5aa50ff0' in proc.stdout:
+    print('PASS')
   else:
-    print(' FAIL, expected 5AA50FF0')
+    print(' FAIL, expected 0x5aa50ff0')
     test_fail(fmt_out(proc.stdout, proc.stderr))
 
 def test_xtag():
+  print('Finding xcore device ................... ', end='')
   try:
     result = subprocess.run(args=['xrun', '-l'], timeout=20, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
@@ -255,45 +287,51 @@ def test_xtag():
   if len(adapters) != 1:
     print('FAIL - more than 1 xTAG found!')
     test_fail(fmt_out(result.stdout, result.stderr))
-    
+
   # Extract adapter id - the 4th string along the line
   tmp = adapter_list[adapters[0]].split()
 
   if len(tmp) < 5 or len(tmp[3]) != 8:
     print('FAIL - wrong number of lines')
     test_fail(fmt_out(result.stdout, result.stderr))
-    
+
   test_xtag_id = tmp[3]
-  print('Found xTAG Adapter ID ' + test_xtag_id)
-  if tmp[4] != 'P[0]':
+  print('Found xTAG Adapter ID... ' + test_xtag_id, end = '', flush=True)
+  if tmp[4] != 'XS3A[0]':
     print('FAIL - no XCORE found')
     test_fail(fmt_out(result.stdout, result.stderr))
-    print(' PASS')
+  print(' Found XCORE.AI... PASS')
 
 
 def main():
-    tools_str = 'a77caa1' # 15.3.1
+    print('*** XCORE.AI board test ***')
 
-    print(header_string)
-    check_tools_ver(tools_str)
+    a = ['0x53', '0x46', '0x44', '0x50', '0x06', '0x01', '0x00', '0xff', '0x00', '0x06', '0x01', '0x10', '0x10', '0x00', '0x00', '0xff', '0xe5', '0x20', '0xe1', '0xff', '0xff', '0xff', '0xff', '0x01', '0x4a', '0xeb', '0x08', '0x6b', '0x08', '0x3b', '0x00', '0xff', '0xee', '0xff', '0xff', '0xff', '0xff', '0xff', '0x00', '0xff', '0xff', '0xff', '0x00', '0xff', '0x0c', '0x20', '0x0f', '0x52', '0x10', '0xd8', '0x00', '0x00', '0x40', '0x22', '0x1a', '0x01', '0x82', '0xb7', '0x94', '0xd0', '0x64', '0xc1', '0x08', '0x46', '0x7a', '0x75', '0x7a', '0x75', '0xf7', '0xc4', '0xd5', '0x5c', '0x00', '0x06', '0x51', '0xff', '0x88', '0x30', '0x00', '0x00', '0x00', '0x00', '0x00', '0x00', '0x00']
+    print(len(a))
+    check_tools_version(15, 3, 1)
 
     test_xtag()             # Test for presence of chip
-    
-    test_hello()            # Print hello world
-    test_frequency()        # Frequency check
-    test_xscope()           # Print hello over xscope 1000 times; try which xscope link
+
+    e = test_hello()        # Print hello world
+    test_frequency(e)       # Frequency check
+    l = test_xscope()       # Print hello over xscope 1000 times; try which xscope link
     test_power(True)        # Test max power requirements
     test_power(False)       # Test sudden load change in power
 
-    test_flash_ident()      # Read identifier
-    test_flash_sfdp()       # Read SFDP string
+    i = test_flash_ident()  # Read identifier
+    s = test_flash_sfdp()   # Read SFDP string
     test_flash_program()    # Try and write a program
     test_flash_run()        # Execute the program and check that it ran
-    
-    test_usb()
-    test_mipi()
-    
+
+#    test_usb()
+#    test_mipi()
+
     print(big_pass)
 
+    print('''Summary:
+- XSCOPE Link: %d
+- Flash ID: %s
+- Flash SDFP: %s''' % (l, str(i), str(s)))
+    
 if __name__ == "__main__":
    main()

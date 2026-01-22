@@ -151,7 +151,7 @@ def test_power(slope):
     print('Testing power steady max supply ........ ', end='', flush=True)
   else:
     binary = 'app_an02056_power_impulse.xe'
-    print('Testing power suddent change in load ... ', end='', flush=True)
+    print('Testing power sudden change in load .... ', end='', flush=True)
   try:
     result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin', binary)], timeout=5, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:

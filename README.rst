@@ -10,8 +10,8 @@ AN02056: Board test procedure and code
 :description: This app note provides a method and source code for
               smoke-testing a newly designed board
 :category: General Purpose
-:keywords: Test
-:hardware: 
+:keywords: Test, Board design, Hardware
+:hardware: XK-EVK-XU316
 
 
 *******

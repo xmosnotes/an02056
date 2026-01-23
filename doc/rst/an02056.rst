@@ -17,7 +17,9 @@ will perform a series of basic tests. The tests performed include:
 
 * Establish that the oscillator is set to the correct frequency
 
-* Establish that XSCOPE works
+* Find the XSCOPE link
+
+* Establish that XSCOPE works reliably
 
 * Establish that the power supply can supply the peak rate
 
@@ -179,15 +181,31 @@ If the lines are not one second apart, then either the Oscillator frequency
 in the XN file does not reflect the input frequency on XIN, or the
 reference timer is not set correctly.
 
-XSCOPE
-------
+XSCOPE Discovery
+----------------
 
-This program, prints "Hello world" followed by a number 1000 times.
-It does so over XSCOPE so the numbers should be printed rapidly..
-Execute this program as follows::
+This program, opens all the links, and checks which link receives a credit
+token. It then prints the number of the link(s) with the credit token::
 
   xrun --xscope app_an02056_xscope/bin/app_an02056_xscope.xe
 
+The output should be::
+
+  XSCOPE on link 0
+
+Where 0 is the number of the link. In most cases it is link 0 (the only
+link that comes out on the QF60 packages).
+
+XSCOPE
+------
+
+This program, prints "hello " followed by a number 1000 times.
+It does so over XSCOPE so the numbers should be printed rapidly..
+Execute this program as follows::
+
+  xrun --xscope app_an02056_xscope/bin/app_an02056_xscopeX.xe
+
+Where X is replaced with the link number discovered above.
 The output should be::
 
   hello 0000

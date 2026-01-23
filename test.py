@@ -103,23 +103,29 @@ def test_hello():
     test_fail(fmt_out(result.stdout, result.stderr))
   return elapsed
 
-def test_xscope():
-  print('Testing xscope ......................... ', end='', flush=True)
-  the_link_nr = None
-  for link_nr in range(8):
-    try:
-      result = subprocess.run(args=['xrun', '--xscope', os.path.join('default_bin','app_an02056_xscope%d.xe' % link_nr)], timeout=5, capture_output=True, universal_newlines=True)
-      the_link_nr = link_nr
-    except subprocess.TimeoutExpired as e:
-      pass
-    if the_link_nr is not None:
-      break
-
-  if the_link_nr is None:
-    print(f'No working XSCOPE link found')
+def discover_xscope():
+  print('Discover xscope ........................ ', end='', flush=True)
+  try:
+    result = subprocess.run(args=['xrun', '--io', os.path.join('default_bin','app_an02056_xscope_discovery.xe')], timeout=5, capture_output=True, universal_newlines=True)
+  except subprocess.TimeoutExpired as e:
+    print(' FAIL - TIMEOUT')
+    test_fail()
+  words = result.stdout.split()
+  if len(words) != 4:
+    print(f'No xcsope link found')
     test_fail(fmt_out(result.stdout, result.stderr))
+  link_nr = int(words[3])
+  print('Found XSCOPE on link %d... PASS'%link_nr)
+  return link_nr
 
-  print('Found XSCOPE on link %d...'%the_link_nr, end = '', flush=True)
+def test_xscope(link_nr):
+  print('Testing xscope ......................... ', end='', flush=True)
+  try:
+    result = subprocess.run(args=['xrun', '--xscope', os.path.join('default_bin','app_an02056_xscope%d.xe' % link_nr)], timeout=5, capture_output=True, universal_newlines=True)
+    the_link_nr = link_nr
+  except subprocess.TimeoutExpired as e:
+    print(' FAIL - TIMEOUT')
+    test_fail()
 
   expected = ''
   for i in range(1000):
@@ -315,7 +321,8 @@ def main():
 
     e = test_hello()        # Print hello world
     test_frequency(e)       # Frequency check
-    l = test_xscope()       # Print hello over xscope 1000 times; try which xscope link
+    l = discover_xscope()   # Dioscover XSCOPE link
+    test_xscope(l)          # Print hello over xscope 1000 times
     test_power(True)        # Test max power requirements
     test_power(False)       # Test sudden load change in power
 

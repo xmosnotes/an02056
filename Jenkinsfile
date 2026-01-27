@@ -88,10 +88,30 @@ pipeline {
                     parallel {
                         stage('Mac OS') {
                             agent {
-                                label 'xcore.ai && macos && arm64'
+                                label 'xcore.ai && macos'
                             }
                             steps {
-                                dir("${REPO_NAME}/tests") {
+                                dir("${REPO_NAME}") {
+                                    sh "python test_test.py"
+                                }
+                            }
+                        }
+                        stage('Windows') {
+                            agent {
+                                label 'xcore.ai && windows11'
+                            }
+                            steps {
+                                dir("${REPO_NAME}") {
+                                    sh "python test_test.py"
+                                }
+                            }
+                        }
+                        stage('Linux') {
+                            agent {
+                                label 'xcore.ai && linux'
+                            }
+                            steps {
+                                dir("${REPO_NAME}") {
                                     sh "python test_test.py"
                                 }
                             }

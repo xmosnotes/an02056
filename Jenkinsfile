@@ -98,11 +98,13 @@ pipeline {
                         }
                         stage('Windows') {
                             agent {
-                                label 'xcore.ai && windows11'
+                                label 'xcore.ai'
                             }
                             steps {
-                                dir("${REPO_NAME}") {
-                                    sh "python test_test.py"
+                                withTools(params.TOOLS_VERSION) {
+                                    dir("${REPO_NAME}") {
+                                        sh "python test_test.py"
+                                    }
                                 }
                             }
                         }

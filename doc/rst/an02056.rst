@@ -107,11 +107,15 @@ Binary artefacts (.xe files) will be generated in:
 
 *  ``app_an02056_hello_world/bin`` for hello world
 
+*  ``app_an02056_frequency/bin`` for the frequency test
+
+*  ``app_an02056_xscope_discovery/bin`` for the xscope discovery test
+
+*  ``app_an02056_xscope/bin`` for the xscope delivery test
+
 *  ``app_an02056_power/bin/slope`` for the power supply test
 
 *  ``app_an02056_power/bin/impulse`` for the load change test
-
-*  ``app_an02056_xscope/bin`` for the xscope test
 
 *  ``app_an02056_flash/bin`` for the xscope test
 
@@ -187,7 +191,7 @@ XSCOPE Discovery
 This program, opens all the links, and checks which link receives a credit
 token. It then prints the number of the link(s) with the credit token::
 
-  xrun --xscope app_an02056_xscope/bin/app_an02056_xscope.xe
+  xrun --xscope app_an02056_xscope_discovery/bin/app_an02056_xscope_discovery.xe
 
 The output should be::
 

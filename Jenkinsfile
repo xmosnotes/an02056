@@ -64,7 +64,8 @@ pipeline {
                             steps {
                                 runningOn(env.NODE_NAME)
                                 dir("${REPO}") {
-                                checkout scm
+                                    checkout scm
+                                }
                                 dir("${REPO_NAME}/tests") {
                                     withTools(params.TOOLS_VERSION) {
                                         createVenv(reqFile: "requirements.txt")

@@ -127,7 +127,7 @@ Note that all the binaries are generated in the directories above; not in
 the ``default-bin`` directory where the python script expects the binaries.
 Hence, after building you either have to run the binaries manually as shown
 below, or you must copy them into the default-bin directory where they will
-be picked up.
+be picked up by ``test.py``.
 
 
 Chip responsiveness

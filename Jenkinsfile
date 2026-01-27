@@ -83,6 +83,21 @@ pipeline {
                         archiveSandbox(REPO_NAME)
                     }
                 }
+
+                stage('Testing') {
+                    parallel {
+                        stage('Mac OS') {
+                            agent {
+                                label 'xcore.ai && macos && arm64'
+                            }
+                            steps {
+                                dir("${REPO_NAME}/tests") {
+                                    sh "python test_test.py"
+                                }
+                            }
+                        }
+                    }
+                }
             } // stages
             post {
                 cleanup {

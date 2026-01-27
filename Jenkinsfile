@@ -57,9 +57,45 @@ pipeline {
 
                 stage('Testing') {
                     parallel {
+                        stage('Linux') {
+                            agent {
+                                label 'xcore.ai && linux'
+                            }
+                            steps {
+                                dir("${REPO_NAME}") {
+                                    checkout scm
+                                }
+                                dir("${REPO_NAME}/tests") {
+                                    withTools(params.TOOLS_VERSION) {
+                                        createVenv(reqFile: "requirements.txt")
+                                        withVenv {
+                                            sh "python test_test.py"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Mac') {
+                            agent {
+                                label 'xcore.ai && macos'
+                            }
+                            steps {
+                                dir("${REPO_NAME}") {
+                                    checkout scm
+                                }
+                                dir("${REPO_NAME}/tests") {
+                                    withTools(params.TOOLS_VERSION) {
+                                        createVenv(reqFile: "requirements.txt")
+                                        withVenv {
+                                            sh "python test_test.py"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         stage('Windows') {
                             agent {
-                                label 'xcore.ai'
+                                label 'xcore.ai && windows'
                             }
                             steps {
                                 dir("${REPO_NAME}") {

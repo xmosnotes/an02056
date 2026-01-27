@@ -328,7 +328,8 @@ def main():
     else:
         xt = sys.argv[1]
 
-    e = test_hello(xt)         # Print hello world
+    e = test_hello(xt)         # Print hello world, this may pause booting xtag
+    e = test_hello(xt)         # Print hello world, now quickly
     test_frequency(xt,e)       # Frequency check
     l = discover_xscope(xt )   # Dioscover XSCOPE link
     test_xscope(xt,l)          # Print hello over xscope 1000 times

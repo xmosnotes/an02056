@@ -5,6 +5,8 @@
 import sys
 import subprocess
 import os
+import time
+import xtagctl
 
 big_pass = '''
 #######################################
@@ -29,19 +31,23 @@ def fmt_out(stdout='', stderr=''):
 
 
 def main():
-    try:
-        result = subprocess.run(args=['python', os.path.join('..','test.py')], timeout=120, capture_output=True, universal_newlines=True)
-    except subprocess.TimeoutExpired as e:
-        print('FAIL - TIMEOUT')
+    with xtagctl.acquire('xcore.ai') as adapter_id:
+        xtagctl.reset_adapter(adapter_id)
+        time.sleep(2) # Wait for adapter to enumerate
+
+        try:
+            result = subprocess.run(args=['python', os.path.join('..','test.py',adapter_id)], timeout=120, capture_output=True, universal_newlines=True)
+        except subprocess.TimeoutExpired as e:
+            print('FAIL - TIMEOUT')
+            test_fail(fmt_out(result.stdout, result.stderr))
+            sys.exit(1)
+        if big_pass in result.stdout:
+            print('PASS')
+            sys.exit(0)
+        print('FAIL - WRONG OUTPUT')
         test_fail(fmt_out(result.stdout, result.stderr))
         sys.exit(1)
-    if big_pass in result.stdout:
-        print('PASS')
-        sys.exit(0)
-    print('FAIL - WRONG OUTPUT')
-    test_fail(fmt_out(result.stdout, result.stderr))
-    sys.exit(1)
-
+    
     
 if __name__ == "__main__":
    main()

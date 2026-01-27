@@ -31,7 +31,7 @@ def fmt_out(stdout='', stderr=''):
 
 
 def main():
-    with xtagctl.acquire('xcore.ai') as adapter_id:
+    with xtagctl.acquire('/*/') as adapter_id:
         print('Adapter id ', adapter_id)
         xtagctl.reset_adapter(adapter_id)
         time.sleep(2) # Wait for adapter to enumerate

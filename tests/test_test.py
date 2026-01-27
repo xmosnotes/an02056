@@ -52,7 +52,6 @@ def main():
         print('FAIL - WRONG OUTPUT')
         test_fail(fmt_out(result.stdout, result.stderr))
         sys.exit(1)
-    
-    
+
 if __name__ == "__main__":
    main()

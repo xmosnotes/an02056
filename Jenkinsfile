@@ -62,7 +62,6 @@ pipeline {
                                 label 'xcore.ai'
                             }
                             steps {
-                                runningOn(env.NODE_NAME)
                                 dir("${REPO}") {
                                     checkout scm
                                 }

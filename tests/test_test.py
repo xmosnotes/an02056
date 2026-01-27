@@ -20,6 +20,13 @@ big_pass = '''
 #######################################
 '''
 
+def test_fail(output='no output provided'):
+  print(output)
+  sys.exit(1)
+
+def fmt_out(stdout='', stderr=''):
+  return "STDOUT:\n{}\nSTDERR:\n{}".format(stdout, stderr)
+
 
 def main():
     try:

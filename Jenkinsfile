@@ -78,12 +78,6 @@ pipeline {
                     }
                 }
 
-                stage("Archive sandbox") {
-                    steps {
-                        archiveSandbox(REPO_NAME)
-                    }
-                }
-
                 stage('Testing') {
                     parallel {
                         stage('Windows') {
@@ -101,6 +95,12 @@ pipeline {
                                 }
                             }
                         }
+                    }
+                }
+
+                stage("Archive sandbox") {
+                    steps {
+                        archiveSandbox(REPO_NAME)
                     }
                 }
             } // stages

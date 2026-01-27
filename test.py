@@ -92,7 +92,7 @@ def test_hello(xt):
   print('Testing hello world .................... ', end='', flush=True)
   try:
     start = time.time()
-    result = subprocess.run(args=['xrun', '--adapter-id', xt, '--io', os.path.join('default_bin','app_an02056_hello_world.xe')], timeout=timeouts.xrun, capture_output=True, universal_newlines=True)
+    result = subprocess.run(args=['xrun', '--adapter-id', xt, '--io', os.path.join('default_bin','app_an02056_hello_world.xe')], timeout=timeouts.xtag, capture_output=True, universal_newlines=True)
     elapsed = time.time() - start
   except subprocess.TimeoutExpired as e:
     print(' FAIL - TIMEOUT')

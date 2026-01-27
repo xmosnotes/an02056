@@ -55,6 +55,26 @@ pipeline {
                     }
                 }
 
+                stage('Testing') {
+                    parallel {
+                        stage('Windows') {
+                            agent {
+                                label 'xcore.ai'
+                            }
+                            steps {
+                                dir("${REPO_NAME}") {
+                                    withTools(params.TOOLS_VERSION) {
+                                        createVenv(reqFile: "requirements.txt")
+                                        withVenv {
+                                            sh "python test_test.py"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 stage('Code build') {
                     steps {
                         dir(REPO_NAME) {
@@ -75,26 +95,6 @@ pipeline {
                     steps {
                         dir(REPO_NAME) {
                             buildDocs()
-                        }
-                    }
-                }
-
-                stage('Testing') {
-                    parallel {
-                        stage('Windows') {
-                            agent {
-                                label 'xcore.ai'
-                            }
-                            steps {
-                                dir("${REPO_NAME}") {
-                                    withTools(params.TOOLS_VERSION) {
-                                        createVenv(reqFile: "requirements.txt")
-                                        withVenv {
-                                            sh "python test_test.py"
-                                        }
-                                    }
-                                }
-                            }
                         }
                     }
                 }

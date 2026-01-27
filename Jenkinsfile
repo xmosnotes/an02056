@@ -87,7 +87,7 @@ pipeline {
                                     withTools(params.TOOLS_VERSION) {
                                         createVenv(reqFile: "requirements.txt")
                                         withVenv {
-                                            sh "python test_test.py"
+                                            sh "python test_test.py usb_audio_mc_xcai_dut"
                                         }
                                     }
                                 }
@@ -105,7 +105,7 @@ pipeline {
                                     withTools(params.TOOLS_VERSION) {
                                         createVenv(reqFile: "requirements.txt")
                                         withVenv {
-                                            sh "python test_test.py"
+                                            sh "python test_test.py usb_audio_mc_xcai_dut"
                                         }
                                     }
                                 }

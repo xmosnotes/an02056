@@ -31,7 +31,11 @@ def fmt_out(stdout='', stderr=''):
 
 
 def main():
-    with xtagctl.acquire('/.*/') as adapter_id:
+    if len(sys.argv) > 1:
+        regex = sys.argv[1]
+    else:
+        regex = '/.*/'
+    with xtagctl.acquire(regex) as adapter_id:
         print('Adapter id ', adapter_id)
         xtagctl.reset_adapter(adapter_id)
         time.sleep(2) # Wait for adapter to enumerate

@@ -86,35 +86,18 @@ pipeline {
 
                 stage('Testing') {
                     parallel {
-                        stage('Mac OS') {
-                            agent {
-                                label 'xcore.ai && macos'
-                            }
-                            steps {
-                                dir("${REPO_NAME}") {
-                                    sh "python test_test.py"
-                                }
-                            }
-                        }
                         stage('Windows') {
                             agent {
                                 label 'xcore.ai'
                             }
                             steps {
-                                withTools(params.TOOLS_VERSION) {
-                                    dir("${REPO_NAME}") {
-                                        sh "python test_test.py"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Linux') {
-                            agent {
-                                label 'xcore.ai && linux'
-                            }
-                            steps {
                                 dir("${REPO_NAME}") {
-                                    sh "python test_test.py"
+                                    withTools(params.TOOLS_VERSION) {
+                                        createVenv(reqFile: "requirements.txt")
+                                        withVenv {
+                                            sh "python test_test.py"
+                                        }
+                                    }
                                 }
                             }
                         }

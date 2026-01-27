@@ -37,7 +37,7 @@ def main():
         time.sleep(2) # Wait for adapter to enumerate
 
         try:
-            result = subprocess.run(args=['python', os.path.join('..','test.py'),adapter_id], timeout=120, capture_output=True, universal_newlines=True)
+            result = subprocess.run(args=['python', 'test.py', adapter_id], timeout=120, cwd='..', capture_output=True, universal_newlines=True)
         except subprocess.TimeoutExpired as e:
             print('FAIL - TIMEOUT')
             test_fail(fmt_out(result.stdout, result.stderr))

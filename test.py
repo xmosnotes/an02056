@@ -119,7 +119,7 @@ def discover_xscope(xt):
   print('Found XSCOPE on link %d... PASS'%link_nr)
   return link_nr
 
-def test_xscope(link_nr, xt):
+def test_xscope(xt, link_nr):
   print('Testing xscope ......................... ', end='', flush=True)
   try:
     result = subprocess.run(args=['xrun', '--adapter-id', xt, '--xscope', os.path.join('default_bin','app_an02056_xscope%d.xe' % link_nr)], timeout=timeouts.xrun, capture_output=True, universal_newlines=True)
@@ -140,7 +140,7 @@ def test_xscope(link_nr, xt):
 
   return the_link_nr
 
-def test_frequency(elapsed_empty, xt):
+def test_frequency(xt, elapsed_empty):
   print('Testing frequency (takes 1 minute) ..... ', end='', flush=True)
   try:
     start = time.time()
@@ -158,7 +158,7 @@ def test_frequency(elapsed_empty, xt):
     print(f'Frequency test took wrong time ', elapsed)
     test_fail(fmt_out(result.stdout, result.stderr))
 
-def test_power(slope, xt):
+def test_power(xt, slope):
   if slope:
     binary = 'app_an02056_power_slope.xe'
     print('Testing power steady max supply ........ ', end='', flush=True)
@@ -329,16 +329,16 @@ def main():
         xt = sys.argv[1]
 
     e = test_hello(xt)         # Print hello world
-#    test_frequency(xt,e)       # Frequency check
-#    l = discover_xscope(xt )   # Dioscover XSCOPE link
-#    test_xscope(xt,l)          # Print hello over xscope 1000 times
-#    test_power(xt,True)        # Test max power requirements
-#    test_power(xt,False)       # Test sudden load change in power
+    test_frequency(xt,e)       # Frequency check
+    l = discover_xscope(xt )   # Dioscover XSCOPE link
+    test_xscope(xt,l)          # Print hello over xscope 1000 times
+    test_power(xt,True)        # Test max power requirements
+    test_power(xt,False)       # Test sudden load change in power
 
-#    i = test_flash_ident(xt)   # Read identifier
-#    s = test_flash_sfdp(xt)    # Read SFDP string
-#    test_flash_program(xt)     # Try and write a program
-#    test_flash_run(xt)         # Execute the program and check that it ran
+    i = test_flash_ident(xt)   # Read identifier
+    s = test_flash_sfdp(xt)    # Read SFDP string
+    test_flash_program(xt)     # Try and write a program
+    test_flash_run(xt)         # Execute the program and check that it ran
 
     l = 0
     i = [0]

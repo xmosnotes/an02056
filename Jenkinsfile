@@ -62,7 +62,7 @@ pipeline {
                                 label 'xcore.ai'
                             }
                             steps {
-                                dir("${REPO}") {
+                                dir("${REPO_NAME}") {
                                     checkout scm
                                 }
                                 dir("${REPO_NAME}/tests") {

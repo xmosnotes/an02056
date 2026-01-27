@@ -22,7 +22,7 @@ big_pass = '''
 
 def main():
     try:
-        result = subprocess.run(args=['python3', 'test.py'], timeout=120, capture_output=True, universal_newlines=True)
+        result = subprocess.run(args=['python3', os.path.join('..','test.py')], timeout=120, capture_output=True, universal_newlines=True)
     except subprocess.TimeoutExpired as e:
         print('FAIL - TIMEOUT')
         test_fail(fmt_out(result.stdout, result.stderr))

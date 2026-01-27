@@ -59,7 +59,7 @@ pipeline {
                     parallel {
                         stage('Linux') {
                             agent {
-                                label 'xcore.ai && linux'
+                                label 'xcore.ai'
                             }
                             steps {
                                 dir("${REPO_NAME}") {
@@ -77,7 +77,7 @@ pipeline {
                         }
                         stage('Mac') {
                             agent {
-                                label 'xcore.ai && macos'
+                                label 'xcore.ai-mcab && macos'
                             }
                             steps {
                                 dir("${REPO_NAME}") {
@@ -95,7 +95,7 @@ pipeline {
                         }
                         stage('Windows') {
                             agent {
-                                label 'xcore.ai && windows'
+                                label 'xcore.ai-mcab && windows'
                             }
                             steps {
                                 dir("${REPO_NAME}") {

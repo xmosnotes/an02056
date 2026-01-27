@@ -62,7 +62,7 @@ pipeline {
                                 label 'xcore.ai'
                             }
                             steps {
-                                dir("${REPO_NAME}") {
+                                dir("${REPO_NAME}/tests") {
                                     withTools(params.TOOLS_VERSION) {
                                         createVenv(reqFile: "requirements.txt")
                                         withVenv {

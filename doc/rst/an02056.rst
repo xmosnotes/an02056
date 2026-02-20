@@ -74,7 +74,6 @@ providing a log of outputs.
 If successful, the test passes and no further action is required. If it fails,
 information is provided on where and why the failure occurred.
 
-
 Building the tests from source
 ------------------------------
 
@@ -122,11 +121,19 @@ For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
 by ``xmake`` as needed.
 
-Note that all the binaries are generated in the directories above; not in
-the ``default-bin`` directory where the python script expects the binaries.
-Hence, after building, the binaries must either be run manually as shown
-below, or copied into the default-bin directory where they will
-be picked up by ``test.py``.
+These individually built binaries can be run manually using::
+    
+  xrun --io <path_to_binary>
+
+of for xscope tests::
+
+  xrun --xscope <path_to_binary>
+
+.. important:: All the binaries are generated in the directories above; not in
+   the ``default-bin`` directory where the python script expects the binaries.
+   Hence, after building, the binaries must either be run manually as shown
+   below, or copied into the default-bin directory where they will
+   be picked up by ``test.py``.
 
 
 Chip responsiveness
@@ -284,7 +291,8 @@ This programs the Flash with the command::
 
   xflash app_an02056_flash/bin/app_an02056_flash.xe
 
-And should end with a successful write.
+And should end with a successful write. The application will then be run automatically and
+it will write the word 0x5AA50FF0 into address 0xF0000 which is unused by the application.
 
 .. code-block:: none
 
@@ -294,14 +302,14 @@ And should end with a successful write.
 Check core booted from flash
 ----------------------------
 
-This test uses the debugger to connect to the flash chip. This will issue a
-reset, and cause the program to run. The program will write the word
-0x5AA50FF0 into address 0xA1234.
+This test uses the debugger to attach to the target. This does not reset the chip
+but instead breaks any currently running program allowing the state to be inspected.
+
 
 The test performs the following commands in XGDB::
 
-  connect
-  p/x *(0xA1234)
+  attach
+  p/x *(0xF0000)
 
 The expected output is::
 

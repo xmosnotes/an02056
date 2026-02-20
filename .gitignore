@@ -36,3 +36,4 @@
 
 # Built documentation
 doc/_build/pdf/*.pdf
+**/pytest-junit.xml

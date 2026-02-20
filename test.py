@@ -265,7 +265,7 @@ def test_flash_run(xt):
   try:
     proc = subprocess.run(args=['xgdb',
                                   '--batch',
-                                  '--eval-command=connect --adapter-id %s'%(xt),
+                                  '--eval-command=attach --adapter-id %s'%(xt),
                                   '--eval-command=p/x *(0xa1234)'], timeout=timeouts.xrun, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' TIMEOUT - FAIL')

@@ -62,8 +62,9 @@ pipeline {
                                 label 'xcore.ai'
                             }
                             steps {
+                                println "Stage running on ${env.NODE_NAME}"
                                 dir("${REPO_NAME}") {
-                                    checkout scm
+                                    checkoutScmShallow()
                                 }
                                 dir("${REPO_NAME}/tests") {
                                     withTools(params.TOOLS_VERSION) {
@@ -80,8 +81,9 @@ pipeline {
                                 label 'xcore.ai-mcab && macos'
                             }
                             steps {
+                                println "Stage running on ${env.NODE_NAME}"
                                 dir("${REPO_NAME}") {
-                                    checkout scm
+                                    checkoutScmShallow()
                                 }
                                 dir("${REPO_NAME}/tests") {
                                     withTools(params.TOOLS_VERSION) {
@@ -98,8 +100,9 @@ pipeline {
                                 label 'xcore.ai-mcab && windows'
                             }
                             steps {
+                                println "Stage running on ${env.NODE_NAME}"
                                 dir("${REPO_NAME}") {
-                                    checkout scm
+                                    checkoutScmShallow()
                                 }
                                 dir("${REPO_NAME}/tests") {
                                     withTools(params.TOOLS_VERSION) {

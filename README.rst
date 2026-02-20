@@ -20,7 +20,7 @@ Summary
 When designing a new board, it can be useful to put the board through a set
 of tests to establish that the xcore is fully functional, powered
 correctly, etc. This app note contains a small collection of test programs.
-You can add extra test programs that are specific to your board design.
+Extra test programs may be added that are specific to your board design.
 
 ********
 Features

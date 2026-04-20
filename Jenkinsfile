@@ -61,7 +61,6 @@ pipeline {
                             steps {
                                 dir(REPO_NAME) {
                                     xcoreBuild()
-                                    stash name: 'built-binaries', includes: 'board.xn,default_bin/**,app_an02056_*/bin/**', useDefaultExcludes: false
                                 }
                             }
                         }

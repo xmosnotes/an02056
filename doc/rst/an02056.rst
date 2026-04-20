@@ -68,7 +68,7 @@ previous section), run the following Python script::
 
   python test.py
 
-This runs a sequence of tests, and stops at the first failing test,
+This runs a sequence of tests using the **pre-built binaries** found in the ``default_bin`` directory, and stops at the first failing test,
 providing a log of outputs.
 
 If successful, the test passes and no further action is required. If it fails,
@@ -77,7 +77,7 @@ information is provided on where and why the failure occurred.
 Building the tests from source
 ------------------------------
 
-All tests can be built from scratch and run individually. This is
+All tests can be built from scratch and run individually allowing modifications to be made. This is
 especially important for boards that, for example, use a
 different input clock frequency, runs at a higher frequency (800 MHz
 parts), or has the boot flash on unusual pins.
@@ -125,12 +125,12 @@ These individually built binaries can be run manually using::
     
   xrun --io <path_to_binary>
 
-of for xscope tests::
+or for xscope tests::
 
   xrun --xscope <path_to_binary>
 
 .. important:: All the binaries are generated in the directories above; not in
-   the ``default-bin`` directory where the python script expects the binaries.
+   the ``default-bin`` directory where the python script ``test.py``expects the binaries.
    Hence, after building, the binaries must either be run manually as shown
    below, or copied into the default-bin directory where they will
    be picked up by ``test.py``.

@@ -1,7 +1,7 @@
 # Copyright 2026 XMOS LIMITED.
 # This Software is subject to the terms of the XMOS Public Licence: Version 1.
 
-""" This module contains timeouts, in seconds, for the various stages of the test. These are used
+"""This module contains timeouts, in seconds, for the various stages of the test. These are used
 by test.py to determine how long to wait for each stage of the test before declaring a failure."""
 
 xcc=2       # running XCC

@@ -6,7 +6,7 @@ set(APP_HW_TARGET          board_no_xscope.xn)
 
 set(APP_DEPENDENT_MODULES  "")
 
-set(APP_COMPILER_FLAGS     "")
+set(APP_COMPILER_FLAGS     -g)
 
 set(APP_INCLUDES           src/)
 

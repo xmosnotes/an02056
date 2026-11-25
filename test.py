@@ -99,14 +99,11 @@ def check_tools_version(tools_major, tools_minor, tools_sub):
   if len(version) != 3:
     print(f'ERROR: Incorrect XMOS Tools version does not have three components')
     test_fail(fmt_out(result.stdout, result.stderr))
-  compatible = True
-  compatible = compatible and int(version[0]) == tools_major
-  if int(version[1]) == tools_minor:
-    compatible = compatible and int(version[2]) >= tools_sub
-  elif int(version[1]) < tools_major:
-    compatible = False
+  compatible = (int(version[0]) == tools_major and
+                int(version[1]) == tools_minor and
+                int(version[2]) >= tools_sub)
   if not compatible:
-    print('Requires version %d.%d.%d not %s\n' % (tools_major, tools_minor, tools_sub, words[2]))
+    print('Requires version %d.%d.x (x >= %d), not %s\n' % (tools_major, tools_minor, tools_sub, words[2]))
     test_fail(fmt_out(result.stdout, result.stderr))
   print('PASS')
 

@@ -6,7 +6,7 @@ set(APP_HW_TARGET          board.xn)
 
 set(APP_DEPENDENT_MODULES  "")
 
-set(APP_COMPILER_FLAGS     -report)
+set(APP_COMPILER_FLAGS     -report -g -Wm,--map,file.map)
 
 set(APP_INCLUDES           src/)
 

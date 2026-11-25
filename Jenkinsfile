@@ -16,12 +16,12 @@ pipeline {
         )
         string(
             name: 'XMOSDOC_VERSION',
-            defaultValue: 'v8.0.0',
+            defaultValue: 'v8.0.1',
             description: 'xmosdoc version'
         )
         string(
             name: 'INFR_APPS_VERSION',
-            defaultValue: 'v3.2.0',
+            defaultValue: 'v3.3.0',
             description: 'The infr_apps version'
         )
     }
@@ -55,85 +55,30 @@ pipeline {
                     }
                 }
 
-                stage('Testing') {
+                stage('Build, checks, docs') {
                     parallel {
-                        stage('Linux') {
-                            agent {
-                                label 'xcore.ai'
-                            }
+                        stage('Code build') {
                             steps {
-                                dir("${REPO_NAME}") {
-                                    checkout scm
-                                }
-                                dir("${REPO_NAME}/tests") {
-                                    withTools(params.TOOLS_VERSION) {
-                                        createVenv(reqFile: "requirements.txt")
-                                        withVenv {
-                                            sh "python test_test.py"
-                                        }
-                                    }
+                                dir(REPO_NAME) {
+                                    xcoreBuild()
                                 }
                             }
                         }
-                        stage('Mac') {
-                            agent {
-                                label 'xcore.ai-mcab && macos'
-                            }
+
+                        stage('Repo checks') {
                             steps {
-                                dir("${REPO_NAME}") {
-                                    checkout scm
-                                }
-                                dir("${REPO_NAME}/tests") {
-                                    withTools(params.TOOLS_VERSION) {
-                                        createVenv(reqFile: "requirements.txt")
-                                        withVenv {
-                                            sh "python test_test.py usb_audio_mc_xcai_dut"
-                                        }
-                                    }
+                                warnError("Repo checks failed") {
+                                    runRepoChecks("${WORKSPACE}/${REPO_NAME}")
                                 }
                             }
                         }
-                        stage('Windows') {
-                            agent {
-                                label 'xcore.ai-mcab && windows'
-                            }
+
+                        stage('Doc build') {
                             steps {
-                                dir("${REPO_NAME}") {
-                                    checkout scm
-                                }
-                                dir("${REPO_NAME}/tests") {
-                                    withTools(params.TOOLS_VERSION) {
-                                        createVenv(reqFile: "requirements.txt")
-                                        withVenv {
-                                            sh "python test_test.py usb_audio_mc_xcai_dut"
-                                        }
-                                    }
+                                dir(REPO_NAME) {
+                                    buildDocs()
                                 }
                             }
-                        }
-                    }
-                }
-
-                stage('Code build') {
-                    steps {
-                        dir(REPO_NAME) {
-                            xcoreBuild()
-                        }
-                    }
-                }
-
-                stage('Repo checks') {
-                    steps {
-                        warnError("Repo checks failed") {
-                            runRepoChecks("${WORKSPACE}/${REPO_NAME}")
-                        }
-                    }
-                }
-
-                stage('Doc build') {
-                    steps {
-                        dir(REPO_NAME) {
-                            buildDocs()
                         }
                     }
                 }
@@ -150,6 +95,98 @@ pipeline {
                 }
             }
         } // stage 'Build and test'
+
+        stage('Tests') {
+            parallel {
+                stage('Linux') {
+                    agent {
+                        label 'xcore.ai'
+                    }
+                    steps {
+                        println "Stage running on ${env.NODE_NAME}"
+                        dir("${REPO_NAME}") {
+                            checkoutScmShallow()
+                        }
+                        dir("${REPO_NAME}/tests") {
+                            withTools(params.TOOLS_VERSION) {
+                                createVenv(reqFile: "requirements.txt")
+                                withVenv {
+                                    sh "pytest test_all.py -vv"
+                                }
+                            }
+                        }
+                    }
+                    post {
+                        always {
+                            dir("${REPO_NAME}/tests") {
+                                junit testResults: 'pytest-junit.xml', allowEmptyResults: true
+                            }
+                        }
+                        cleanup {
+                            xcoreCleanSandbox()
+                        }
+                    }
+                }
+                stage('Mac') {
+                    agent {
+                        label 'xcore.ai-mcab && macos'
+                    }
+                    steps {
+                        println "Stage running on ${env.NODE_NAME}"
+                        dir("${REPO_NAME}") {
+                            checkoutScmShallow()
+                        }
+                        dir("${REPO_NAME}/tests") {
+                            withTools(params.TOOLS_VERSION) {
+                                createVenv(reqFile: "requirements.txt")
+                                withVenv {
+                                    sh "pytest test_all.py -vv"
+                                }
+                            }
+                        }
+                    }
+                    post {
+                        always {
+                            dir("${REPO_NAME}/tests") {
+                                junit testResults: 'pytest-junit.xml', allowEmptyResults: true
+                            }
+                        }
+                        cleanup {
+                            xcoreCleanSandbox()
+                        }
+                    }
+                }
+                stage('Windows') {
+                    agent {
+                        label 'xcore.ai-mcab && windows'
+                    }
+                    steps {
+                        println "Stage running on ${env.NODE_NAME}"
+                        dir("${REPO_NAME}") {
+                            checkoutScmShallow()
+                        }
+                        dir("${REPO_NAME}/tests") {
+                            withTools(params.TOOLS_VERSION) {
+                                createVenv(reqFile: "requirements.txt")
+                                withVenv {
+                                    sh "pytest test_all.py -vv"
+                                }
+                            }
+                        }
+                    }
+                    post {
+                        always {
+                            dir("${REPO_NAME}/tests") {
+                                junit testResults: 'pytest-junit.xml', allowEmptyResults: true
+                            }
+                        }
+                        cleanup {
+                            xcoreCleanSandbox()
+                        }
+                    }
+                }
+            }
+        }
 
         stage('🚀 Release') {
             when {

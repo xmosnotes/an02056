@@ -11,7 +11,7 @@ set(APP_INCLUDES           src/)
 set(XMOS_SANDBOX_DIR       ${CMAKE_CURRENT_LIST_DIR}/../..)
 
 set(APP_COMPILER_FLAGS     -fxscope)
-set(APP_HW_TARGET          board.xn)
+set(APP_HW_TARGET          board0.xn)
 XMOS_REGISTER_APP()
 
 project(app_an02056_xscope1)

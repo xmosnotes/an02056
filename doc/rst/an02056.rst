@@ -6,7 +6,7 @@ on the board to check for basic functionality. This application note
 contains a set of test programs and a python program that runs those
 programs and a few additional tests.
 
-In its simplest form, you can execute a single python test procedure that
+In its simplest form, a single Python test procedure can be executed that
 will perform a series of basic tests. The tests performed include:
 
 * Establish that JTAG is connected up
@@ -29,17 +29,17 @@ will perform a series of basic tests. The tests performed include:
 
 * Program the flash and execute the code
 
-The source code of these tests is provided and you can
+The source code for these tests is provided, allowing users to:
 
-* Provide your own board description to deal with different crystal
+* Provide a board description to deal with different crystal
   frequencies etc
 
 * Extend or modify the tests
 
-* Add your own tests
+* Add additional tests
 
-The tests have been written for XCORE.AI. All byt the power supply tests
-will also work on XCORE-200. Before presenting each test we discuss how to
+The tests have been written for XCORE.AI. All except the power supply tests
+will also work on XCORE-200. Before presenting each test, this document discusses how to
 obtain the software and how to build it.
 
 Downloading the test program
@@ -63,37 +63,35 @@ Running the test program
 ------------------------
 
 The app note comes with a test program that runs all tests in sequence.
-Assuming you have python installed (> 3.7.7) and the XMOS tools (see the
-previous section) run the following Python script::
+Assuming Python (> 3.7.7) and the XMOS tools are installed (see the
+previous section), run the following Python script::
 
   python test.py
 
-This runs a sequence of tests, and stops at the first failing test,
+This runs a sequence of tests using the **pre-built binaries** found in the ``default_bin`` directory, and stops at the first failing test,
 providing a log of outputs.
 
-All going well - this test passes and you can stop here. If it fails, it
-will give you information at what point it failed and why.
-
+If successful, the test passes and no further action is required. If it fails,
+information is provided on where and why the failure occurred.
 
 Building the tests from source
 ------------------------------
 
-You can build all the tests from scratch and run them individually. This is
-especially important if you have a board that, for example, uses a
+All tests can be built from scratch and run individually allowing modifications to be made. This is
+especially important for boards that, for example, use a
 different input clock frequency, runs at a higher frequency (800 MHz
 parts), or has the boot flash on unusual pins.
 
-Before you build the system, you should copy the configuration file for
-your board over each of the ``app_an02056_*/board.xn`` files. The default
+Before building the system, the configuration file for
+the board should be copied over each of the ``app_an02056_*/board.xn`` files. The default
 ``board.xn`` file assumes a 600 MHz XCORE.AI chip with a flash connected to
-the standard pins. You may be able to use this file, but copying your XN
-file over the provided ``board.xn`` file will ensure that your XN file is
+the standard pins. This file may be usable, but copying the board XN
+file over the provided ``board.xn`` file will ensure that the XN file is
 correct.
 
 To configure the build, the following commands should be run from an XTC command prompt::
 
     cd an02056
-    cd app_an02056
     cmake -G "Unix Makefiles" -B build
 
 All required dependencies are included in the software package. If any dependencies are missing,
@@ -123,17 +121,25 @@ For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
 by ``xmake`` as needed.
 
-Note that all the binaries are generated in the directories above; not in
-the ``default-bin`` directory where the python script expects the binaries.
-Hence, after building you either have to run the binaries manually as shown
-below, or you must copy them into the default-bin directory where they will
-be picked up by ``test.py``.
+These individually built binaries can be run manually using::
+    
+  xrun --io <path_to_binary>
+
+or for xscope tests::
+
+  xrun --xscope <path_to_binary>
+
+.. important:: All the binaries are generated in the directories above; not in
+   the ``default-bin`` directory where the python script ``test.py``expects the binaries.
+   Hence, after building, the binaries must either be run manually as shown
+   below, or copied into the default-bin directory where they will
+   be picked up by ``test.py``.
 
 
 Chip responsiveness
 -------------------
 
-We test chip responsiveness by issuing this command::
+Chip responsiveness is tested by issuing this command::
 
   xrun -l
 
@@ -146,7 +152,7 @@ The output should be::
     --    ----                  ----------      -------
     0     XMOS XTAG-4           42ADT6AB        XS3A[0]
 
-Where the Adapter ID is some 8-character string. The test program expects
+Where the Adapter ID is an eight-character string. The test program expects
 exactly one XTAG adapter.
 
 Hello world
@@ -167,8 +173,8 @@ Frequency test
 --------------
 
 This program prints, 60 times, a message exactly one second apart.
-The whole program should execute in exactly 60 seconds. You can visually
-check that the timings are right by keeping an eye on a wall-clock
+The whole program should execute in exactly 60 seconds. The timings can be visually
+checked by observing a wall clock
 simultaneously ::
 
   xrun --io app_an02056_frequency/bin/app_an02056_frequency.xe
@@ -207,9 +213,9 @@ This program, prints "hello " followed by a number 1000 times.
 It does so over XSCOPE so the numbers should be printed rapidly..
 Execute this program as follows::
 
-  xrun --xscope app_an02056_xscope/bin/app_an02056_xscopeX.xe
+  xrun --xscope app_an02056_xscope/bin/app_an02056_xscope<number>.xe
 
-Where X is replaced with the link number discovered above.
+Where <number> is replaced with the link number identified above.
 The output should be::
 
   hello 0000
@@ -285,19 +291,25 @@ This programs the Flash with the command::
 
   xflash app_an02056_flash/bin/app_an02056_flash.xe
 
-And should end with a successful write.
+And should end with a successful write. The application will then be run automatically and
+it will write the word 0x5AA50FF0 into address 0xF0000 which is unused by the application.
+
+.. code-block:: none
+
+   Site 0 has finished successfully.        
+
 
 Check core booted from flash
 ----------------------------
 
-This test uses the debugger to connect to the flash chip. This will issue a
-reset, and cause the program to run. The program will write the word
-0x5AA50FF0 into address 0xA1234.
+This test uses the debugger to attach to the target. This does not reset the chip
+but instead breaks any currently running program allowing the state to be inspected.
+
 
 The test performs the following commands in XGDB::
 
-  connect
-  p/x *(0xA1234)
+  attach
+  p/x *(0xF0000)
 
 The expected output is::
 

@@ -25,7 +25,7 @@ will perform a series of basic tests. The tests performed include:
 
 * Establish that the power supply can respond to a sudden change in load
 
-* Identify the flash device and it's properties
+* Identify the flash device and its properties
 
 * Program the flash and execute the code
 
@@ -79,8 +79,8 @@ Building the tests from source
 
 All tests can be built from scratch and run individually allowing modifications to be made. This is
 especially important for boards that, for example, use a
-different input clock frequency, runs at a higher frequency (800 MHz
-parts), or has the boot flash on unusual pins.
+different input clock frequency, run at a higher frequency (800 MHz
+parts), or have the boot flash on unusual pins.
 
 Before building the system, the configuration file for
 the board should be copied over each of the ``app_an02056_*/board.xn`` files. The default
@@ -210,7 +210,7 @@ XSCOPE
 ------
 
 This program, prints "hello " followed by a number 1000 times.
-It does so over XSCOPE so the numbers should be printed rapidly..
+It does so over XSCOPE so the numbers should be printed rapidly.
 Execute this program as follows::
 
   xrun --xscope app_an02056_xscope/bin/app_an02056_xscope<number>.xe
@@ -226,7 +226,7 @@ The output should be::
 
 There should be no gaps in the messages. A gap indicates that the host
 computer is not fast enough to keep up with xscope; garbled output
-indicates that the xscope link in electrically unstable. No output
+indicates that the xscope link is electrically unstable. No output
 indicates that the xscope link is not enabled properly. On error ``xrun``
 may hang.
 
@@ -252,7 +252,7 @@ Power supply load change
 
 The power supply load change test runs a program that, on both tiles, executes VPU
 instructions with alternating bit patterns. It starts all threads
-simultaneously causing a sudden load change on the power supply/
+simultaneously causing a sudden load change on the power supply.
 Execute this program as follows::
 
   xrun --io app_an02056_power/bin/impulse/app_an02056_power_impulse.xe

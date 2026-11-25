@@ -4,6 +4,7 @@
 
 import importlib.util
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -25,6 +26,40 @@ def test_fmt_out():
     out = dut.fmt_out("one", "two")
     assert "STDOUT:\none" in out
     assert "STDERR:\ntwo" in out
+
+
+# Hardware-independent regression tests: when xflash or xgdb times out, the
+# handler must report a failure rather than raise UnboundLocalError by reading
+# the result of the subprocess.run call that never returned.
+@pytest.mark.parametrize(
+    "func",
+    [dut.test_flash_program, dut.test_flash_ran],
+    ids=["flash_program", "flash_ran"],
+)
+@pytest.mark.parametrize(
+    "stdout, stderr",
+    [("partial stdout", "partial stderr"), (None, None)],
+    ids=["captured_output", "none_streams"],
+)
+def test_timeout_reports_failure(monkeypatch, capsys, func, stdout, stderr):
+    def fake_run(*args, **kwargs):
+        raise subprocess.TimeoutExpired(
+            cmd=kwargs.get("args", "fake"), timeout=1, output=stdout, stderr=stderr
+        )
+
+    monkeypatch.setattr(dut.subprocess, "run", fake_run)
+
+    with pytest.raises(SystemExit) as excinfo:
+        func("FAKEXTAG")
+
+    assert excinfo.value.code == 1
+    out = capsys.readouterr().out
+    assert "TIMEOUT - FAIL" in out
+    assert dut.big_fail in out
+    if stdout is None:
+        assert dut.fmt_out("", "") in out
+    else:
+        assert dut.fmt_out(stdout, stderr) in out
 
 
 @pytest.fixture(scope="module")

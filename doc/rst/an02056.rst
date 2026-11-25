@@ -25,7 +25,7 @@ will perform a series of basic tests. The tests performed include:
 
 * Establish that the power supply can respond to a sudden change in load
 
-* Identify the flash device and it's properties
+* Identify the flash device and its properties
 
 * Program the flash and execute the code
 
@@ -79,15 +79,26 @@ Building the tests from source
 
 All tests can be built from scratch and run individually allowing modifications to be made. This is
 especially important for boards that, for example, use a
-different input clock frequency, runs at a higher frequency (800 MHz
-parts), or has the boot flash on unusual pins.
+different input clock frequency, run at a higher frequency (800 MHz
+parts), or have the boot flash on unusual pins.
 
 Before building the system, the configuration file for
 the board should be copied over each of the ``app_an02056_*/board.xn`` files. The default
-``board.xn`` file assumes a 600 MHz XCORE.AI chip with a flash connected to
-the standard pins. This file may be usable, but copying the board XN
-file over the provided ``board.xn`` file will ensure that the XN file is
+``board.xn`` file assumes a 600 MHz XCORE.AI chip with a 24 MHz oscillator and a flash
+connected to the standard pins. This file may be usable, but copying the board XN
+file over the provided ``board.xn`` files will ensure that the XN file is
 correct.
+
+The xscope tests use their own XN files. These should be edited to match the board
+(for example the oscillator, system frequency and flash settings) rather than replaced:
+
+* ``app_an02056_xscope/board0.xn`` to ``board7.xn`` are copies of ``board.xn`` that
+  differ only in the link used for xscope (``XL0`` to ``XL7``). Each must keep its own
+  xscope link.
+
+* ``app_an02056_xscope_discovery/board_no_xscope.xn`` is a copy of ``board.xn`` with
+  the xscope link removed, as the discovery program probes the links itself. It must
+  not have an xscope link added.
 
 To configure the build, the following commands should be run from an XTC command prompt::
 
@@ -115,7 +126,7 @@ Binary artefacts (.xe files) will be generated in:
 
 *  ``app_an02056_power/bin/impulse`` for the load change test
 
-*  ``app_an02056_flash/bin`` for the xscope test
+*  ``app_an02056_flash/bin`` for the flash test
 
 For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
@@ -130,9 +141,9 @@ or for xscope tests::
   xrun --xscope <path_to_binary>
 
 .. important:: All the binaries are generated in the directories above; not in
-   the ``default-bin`` directory where the python script ``test.py``expects the binaries.
+   the ``default_bin`` directory where the python script ``test.py`` expects the binaries.
    Hence, after building, the binaries must either be run manually as shown
-   below, or copied into the default-bin directory where they will
+   below, or copied into the ``default_bin`` directory where they will
    be picked up by ``test.py``.
 
 
@@ -210,7 +221,7 @@ XSCOPE
 ------
 
 This program, prints "hello " followed by a number 1000 times.
-It does so over XSCOPE so the numbers should be printed rapidly..
+It does so over XSCOPE so the numbers should be printed rapidly.
 Execute this program as follows::
 
   xrun --xscope app_an02056_xscope/bin/app_an02056_xscope<number>.xe
@@ -226,7 +237,7 @@ The output should be::
 
 There should be no gaps in the messages. A gap indicates that the host
 computer is not fast enough to keep up with xscope; garbled output
-indicates that the xscope link in electrically unstable. No output
+indicates that the xscope link is electrically unstable. No output
 indicates that the xscope link is not enabled properly. On error ``xrun``
 may hang.
 
@@ -252,7 +263,7 @@ Power supply load change
 
 The power supply load change test runs a program that, on both tiles, executes VPU
 instructions with alternating bit patterns. It starts all threads
-simultaneously causing a sudden load change on the power supply/
+simultaneously causing a sudden load change on the power supply.
 Execute this program as follows::
 
   xrun --io app_an02056_power/bin/impulse/app_an02056_power_impulse.xe
@@ -265,14 +276,12 @@ Any other output indicates that the power supply cannot cope with a sudden
 load change. ``xrun`` will hang on any error.
 
 
-.. _further_reading:
-
 Flash ID
 --------
 
 The flash ID is read with the command::
 
-  xflash --spi-command 0x9f 3 1 --target-file app_an02056_power/board.xn
+  xflash --spi-command 0x9f 3 0 --target-file app_an02056_flash/board.xn
   
 
 Flash SFDP
@@ -280,7 +289,7 @@ Flash SFDP
 
 The flash SFDP (Serial Flash Discovery Protocol) is read with the command::
 
-  xflash --spi-command 0x5A 259 1 --target-file app_an02056_power/board.xn
+  xflash --spi-command 0x5A 259 0 --target-file app_an02056_flash/board.xn
   
 This produces the descriptor as specified in JEDEC Standard 216H.
 
@@ -315,6 +324,8 @@ The expected output is::
 
   $1 = 0x5aa50ff0
 
+
+.. _further_reading:
 
 Further reading
 ---------------

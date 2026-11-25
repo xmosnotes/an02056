@@ -36,7 +36,7 @@ POWER_BIN_SLOPE = REPO_ROOT / "default_bin/app_an02056_power_slope.xe"
 XSCOPE_DISCOVERY_BIN = REPO_ROOT / "default_bin/app_an02056_xscope_discovery.xe"
 XSCOPE_BIN_BASE = REPO_ROOT / "default_bin/"
 FLASH_BIN = REPO_ROOT / "default_bin/app_an02056_flash.xe"
-BOARD_XN = REPO_ROOT / "board.xn"
+BOARD_XN = REPO_ROOT / "app_an02056_flash/board.xn"
 
 big_pass = '''
 #######################################
@@ -74,7 +74,7 @@ def test_fail(output='no output provided'):
   print(big_fail)
   if DEBUG:
     print(output)
-  quit()
+  sys.exit(1)
 
 def fmt_out(stdout='', stderr=''):
   return "STDOUT:\n{}\nSTDERR:\n{}".format(stdout, stderr)
@@ -99,14 +99,11 @@ def check_tools_version(tools_major, tools_minor, tools_sub):
   if len(version) != 3:
     print(f'ERROR: Incorrect XMOS Tools version does not have three components')
     test_fail(fmt_out(result.stdout, result.stderr))
-  compatible = True
-  compatible = compatible and int(version[0]) == tools_major
-  if int(version[1]) == tools_minor:
-    compatible = compatible and int(version[2]) >= tools_sub
-  elif int(version[1]) < tools_major:
-    compatible = False
+  compatible = (int(version[0]) == tools_major and
+                int(version[1]) == tools_minor and
+                int(version[2]) >= tools_sub)
   if not compatible:
-    print('Requires version %d.%d.%d not %s\n' % (tools_major, tools_minor, tools_sub, words[2]))
+    print('Requires version %d.%d.x (x >= %d), not %s\n' % (tools_major, tools_minor, tools_sub, words[2]))
     test_fail(fmt_out(result.stdout, result.stderr))
   print('PASS')
 
@@ -248,7 +245,7 @@ def test_flash_program(xt):
                           timeout=timeouts.xflash, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print('TIMEOUT - FAIL')
-    test_fail(fmt_out(proc.stdout, proc.stderr))
+    test_fail(fmt_out(e.stdout or '', e.stderr or ''))
 
   if 'Site 0 has finished successfully' in proc.stdout:
     print('PASS')
@@ -266,7 +263,7 @@ def test_flash_ran(xt):
                                 timeout=timeouts.xrun, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' TIMEOUT - FAIL')
-    test_fail(fmt_out(proc.stdout, proc.stderr))
+    test_fail(fmt_out(e.stdout or '', e.stderr or ''))
 
   if ' = 0x5aa50ff0' in proc.stdout:
     print('PASS')

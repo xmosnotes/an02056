@@ -245,7 +245,7 @@ def test_flash_program(xt):
                           timeout=timeouts.xflash, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print('TIMEOUT - FAIL')
-    test_fail(fmt_out(proc.stdout, proc.stderr))
+    test_fail(fmt_out(e.stdout or '', e.stderr or ''))
 
   if 'Site 0 has finished successfully' in proc.stdout:
     print('PASS')
@@ -263,7 +263,7 @@ def test_flash_ran(xt):
                                 timeout=timeouts.xrun, capture_output=True, universal_newlines=True)
   except subprocess.TimeoutExpired as e:
     print(' TIMEOUT - FAIL')
-    test_fail(fmt_out(proc.stdout, proc.stderr))
+    test_fail(fmt_out(e.stdout or '', e.stderr or ''))
 
   if ' = 0x5aa50ff0' in proc.stdout:
     print('PASS')

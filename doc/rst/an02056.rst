@@ -272,7 +272,7 @@ Flash ID
 
 The flash ID is read with the command::
 
-  xflash --spi-command 0x9f 3 1 --target-file app_an02056_power/board.xn
+  xflash --spi-command 0x9f 3 0 --target-file app_an02056_flash/board.xn
   
 
 Flash SFDP
@@ -280,7 +280,7 @@ Flash SFDP
 
 The flash SFDP (Serial Flash Discovery Protocol) is read with the command::
 
-  xflash --spi-command 0x5A 259 1 --target-file app_an02056_power/board.xn
+  xflash --spi-command 0x5A 259 0 --target-file app_an02056_flash/board.xn
   
 This produces the descriptor as specified in JEDEC Standard 216H.
 

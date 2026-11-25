@@ -36,7 +36,7 @@ POWER_BIN_SLOPE = REPO_ROOT / "default_bin/app_an02056_power_slope.xe"
 XSCOPE_DISCOVERY_BIN = REPO_ROOT / "default_bin/app_an02056_xscope_discovery.xe"
 XSCOPE_BIN_BASE = REPO_ROOT / "default_bin/"
 FLASH_BIN = REPO_ROOT / "default_bin/app_an02056_flash.xe"
-BOARD_XN = REPO_ROOT / "board.xn"
+BOARD_XN = REPO_ROOT / "app_an02056_flash/board.xn"
 
 big_pass = '''
 #######################################

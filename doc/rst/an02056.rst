@@ -84,10 +84,21 @@ parts), or have the boot flash on unusual pins.
 
 Before building the system, the configuration file for
 the board should be copied over each of the ``app_an02056_*/board.xn`` files. The default
-``board.xn`` file assumes a 600 MHz XCORE.AI chip with a flash connected to
-the standard pins. This file may be usable, but copying the board XN
-file over the provided ``board.xn`` file will ensure that the XN file is
+``board.xn`` file assumes a 600 MHz XCORE.AI chip with a 24 MHz oscillator and a flash
+connected to the standard pins. This file may be usable, but copying the board XN
+file over the provided ``board.xn`` files will ensure that the XN file is
 correct.
+
+The xscope tests use their own XN files. These should be edited to match the board
+(for example the oscillator, system frequency and flash settings) rather than replaced:
+
+* ``app_an02056_xscope/board0.xn`` to ``board7.xn`` are copies of ``board.xn`` that
+  differ only in the link used for xscope (``XL0`` to ``XL7``). Each must keep its own
+  xscope link.
+
+* ``app_an02056_xscope_discovery/board_no_xscope.xn`` is a copy of ``board.xn`` with
+  the xscope link removed, as the discovery program probes the links itself. It must
+  not have an xscope link added.
 
 To configure the build, the following commands should be run from an XTC command prompt::
 

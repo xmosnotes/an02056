@@ -6,8 +6,8 @@ set(APP_HW_TARGET          board.xn)
 
 set(APP_DEPENDENT_MODULES  "")
 
-set(APP_COMPILER_FLAGS_impulse -O2 -DSLOPE=0)
-set(APP_COMPILER_FLAGS_slope   -O2 -DSLOPE=1)
+set(APP_COMPILER_FLAGS_impulse -g -O2 -DSLOPE=0 )
+set(APP_COMPILER_FLAGS_slope   -g -O2 -DSLOPE=1)
 
 set(APP_INCLUDES           src/)
 

@@ -130,7 +130,7 @@ or for xscope tests::
   xrun --xscope <path_to_binary>
 
 .. important:: All the binaries are generated in the directories above; not in
-   the ``default-bin`` directory where the python script ``test.py``expects the binaries.
+   the ``default-bin`` directory where the python script ``test.py`` expects the binaries.
    Hence, after building, the binaries must either be run manually as shown
    below, or copied into the default-bin directory where they will
    be picked up by ``test.py``.

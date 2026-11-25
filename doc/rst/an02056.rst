@@ -115,7 +115,7 @@ Binary artefacts (.xe files) will be generated in:
 
 *  ``app_an02056_power/bin/impulse`` for the load change test
 
-*  ``app_an02056_flash/bin`` for the xscope test
+*  ``app_an02056_flash/bin`` for the flash test
 
 For subsequent builds, the ``cmake`` step may be omitted.
 If ``CMakeLists.txt`` or other build files are modified, ``cmake`` will be re-run automatically
@@ -265,8 +265,6 @@ Any other output indicates that the power supply cannot cope with a sudden
 load change. ``xrun`` will hang on any error.
 
 
-.. _further_reading:
-
 Flash ID
 --------
 
@@ -315,6 +313,8 @@ The expected output is::
 
   $1 = 0x5aa50ff0
 
+
+.. _further_reading:
 
 Further reading
 ---------------
